@@ -6,9 +6,6 @@
     error_reporting(E_NOTICE);
     ini_set('display_errors', 0);
 
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
-
     // have we got a config file?
     try {
         require __DIR__.'/config.php';
@@ -17,6 +14,13 @@
     }
 
     session_start();
+
+    // set the year to process
+    if (isset($_REQUEST['year'])){
+        $year = $_REQUEST['year'];
+    }else{
+        $year = date("Y");
+    }
 
     if (!isset($_SESSION['results']) && isset($_REQUEST['next']) && $_REQUEST['next'] == 1) {
 
@@ -42,13 +46,7 @@
         // find the total number of items in the collection
         $total = $dets->num_collection;
 
-        // set the year to process
-        if (isset($_REQUEST['year'])){
-            $year = $_REQUEST['year'];
-        }else{
-            $year = date("Y");
-        }
-
+        // set variables
         $page = 0;
         $yearTotal = 0;
         $yearPreviousTotal = 0;
@@ -196,7 +194,7 @@
         $next++;
     }elseif ($next == 2){
         $img = $results['coverUrlYear'];
-        $title = "Added in ".date("Y");
+        $title = "Added in ".$results['year'];
         $content = '<div class="counter" id="counter">0</div>';
         $num = $results['yearTotal'];
         $next++;
@@ -234,64 +232,10 @@
         $content = $results['mostFrequentGenre'];
         $num = 0;
         $next++;        
-    }elseif ($next == 7){
         session_destroy();
         header("Location: wrapped.php");
     }
 
-
-    function array_to_html($val, $var=FALSE) {
-        $do_nothing = true;
-        $indent_size = 20;
-        $out = '';
-        $colors = array(
-            "Teal",
-            "YellowGreen",
-            "Tomato",
-            "Navy",
-            "MidnightBlue",
-            "FireBrick",
-            "DarkGreen"
-            );
-      
-          // Get string structure
-          ob_start();
-          print_r($val);
-          $val = ob_get_contents();
-          ob_end_clean();
-      
-          // Color counter
-          $current = 0;
-      
-          // Split the string into character array
-          $array = preg_split('//', $val, -1, PREG_SPLIT_NO_EMPTY);
-          foreach($array as $char) {
-              if($char == "[")
-                  if(!$do_nothing)
-                      if ($var) { $out .= "</div>"; }else{ echo "</div>"; }
-                  else $do_nothing = false;
-              if($char == "[")
-                  if ($var) { $out .= "<div>"; }else{ echo "<div>"; }
-              if($char == ")") {
-                  if ($var) { $out .= "</div></div>"; }else{ echo "</div></div>"; }
-                  $current--;
-              }
-      
-              if ($var) { $out .= $char; }else{ echo $char; }
-      
-              if($char == "(") {
-                  if ($var){
-                    $out .= "<div class='indent' style='padding-left: {$indent_size}px; color: ".($colors[$current % count($colors)]).";'>";
-                  }else{
-                    echo "<div class='indent' style='padding-left: {$indent_size}px; color: ".($colors[$current % count($colors)]).";'>";
-                  }
-                  $do_nothing = true;
-                  $current++;
-              }
-          }
-    
-          return $out;
-    }
 ?>
 
 <!DOCTYPE html>
@@ -414,7 +358,11 @@
         <div class="artist"><?php echo $content ?></div>
     </div>
     <div class="below-text">
-        <p><a class="refresh" href="wrapped.php?next=<?php echo $next ?>" id="reloadLink" aria-haspopup="true" aria-expanded="false">Next</a></p>
+        <?php if ($next != 7){ ?>
+            <p><a class="refresh" href="wrapped.php?next=<?php echo $next ?>" id="reloadLink" aria-haspopup="true" aria-expanded="false">Next</a></p>
+        <?php }else{ ?>
+            <p><a class="refresh" href="wrapped.php" id="reloadLink" aria-haspopup="true" aria-expanded="false">Done</a></p>
+        <?php } ?>
         <small>Built by <a href="https://neilthompson.me">Neil Thompson</a>.</small></div>
 
         <script>
