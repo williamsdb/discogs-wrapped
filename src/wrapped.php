@@ -268,7 +268,7 @@
             margin: 0;
             text-align: center; /* Center-align text by default */
         }
-        a:visited {
+        a:visited a:link {
             color: #FFFFFF;
         }
         .now-playing {
