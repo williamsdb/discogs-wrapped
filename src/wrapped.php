@@ -233,7 +233,6 @@
         $num = 0;
         $next++;        
         session_destroy();
-        header("Location: wrapped.php");
     }
 
 ?>
