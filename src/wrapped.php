@@ -182,7 +182,7 @@
     }
     if ($next == 0){
         $img = "nocoverart.jpeg";
-        $title = "You Discogs Stats";
+        $title = "Your Discogs Stats";
         $content = 'Click Next to get started';
         $num = 0;
         $next++;
