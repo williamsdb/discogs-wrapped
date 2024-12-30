@@ -5,10 +5,10 @@
 <br />
 <div align="center">
 
-<h3 align="center">What should I play next?</h3>
+<h3 align="center">Discogs Wrapped</h3>
 
   <p align="center">
-    Display a random item from your Discogs collection to play.
+    Display some stats about new additons to your Discogs collection over the past year.
     <br />
   </p>
 </div>
@@ -46,11 +46,11 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-I've got a lot of records (At the time of writing 1,076 Discogs tells me) and I always seem to gravitate to the same ones. Therefore, I decided I needed help selecting something to play so I wrote Now Playing to help guide me.
+I don't do Spotify or much streaming as most of my listening is done from physical media. I was getting fed up of all the Spotify Wrapped messages so I decided to write my own but for Discogs.
 
 <a href='https://ko-fi.com/Y8Y0POEES' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi5.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
-![](https://www.spokenlikeageek.com/wp-content/uploads/2024/12/2024-12-06-11-39-00.png)
+![](https://www.spokenlikeageek.com/wp-content/uploads/2024/12/2024-12-30-22-32-08.png)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -85,16 +85,9 @@ Requirements are very simple, it requires the following:
 
 1. Clone the repo:
    ```sh
-   git clone https://github.com/williamsdb/now-playing.git
+   git clone https://github.com/williamsdb/discogs-wrapped.git
    ```
-2. rename config_dummy.php to config.php and changes the settings in it
-3. create a folder called cache and give the web process access to it. For Red Hat variants this is:
-
-```sudo mkdir cache```
-
-```sudo chown apache:apache cache```
-
-```sudo cp nocoverart.jpeg cache```
+2. rename config_dummy.php to config.php and change the settings in it
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -103,11 +96,7 @@ Requirements are very simple, it requires the following:
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-By default the code only selects LPs and 12" singles to display as that is what I am interested in playing. If you want to include other types just extend out line 34. For example to include CDs:
-
-```while (!(in_array("CD", $desc) || in_array("LP", $desc) || in_array("12\"", $desc))) {```
-
-And if you want it to return anything irrespective of type simply comment out the while statement and closing curly brace.
+Open a browser and point it to where you have installed the code.
 
 _For more information, please refer to the [this blog post](https://www.spokenlikeageek.com/2024/12/16/what-should-i-play-next/)_
 
