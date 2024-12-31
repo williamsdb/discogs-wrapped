@@ -22,6 +22,7 @@
         $year = date("Y");
     }
 
+    // get the details from Discogs
     if (!isset($_SESSION['results']) && isset($_REQUEST['next']) && $_REQUEST['next'] == 1) {
 
         // get the user details
@@ -139,34 +140,26 @@
         });
 
         // Select a random artist
-        $randomArtistKey = array_rand($artists);
-        $randomCover1 = $artists[$randomArtistKey]['cover'];
-        $randomArtistKey = array_rand($artists);
-        $randomCover2 = $artists[$randomArtistKey]['cover'];
-        $randomArtistKey = array_rand($artists);
-        $randomCover3 = $artists[$randomArtistKey]['cover'];
-        $randomArtistKey = array_rand($artists);
-        $randomCover4 = $artists[$randomArtistKey]['cover'];
-        $randomArtistKey = array_rand($artists);
-        $randomCover5 = $artists[$randomArtistKey]['cover'];
-        
+        $randomArtistKey = array_rand($artists,5);
+
+        // prepare the results
         $results = [
             'year' => $year,
             'total' => $total,
-            'coverUrlTotal' => $randomCover4,
+            'coverUrlTotal' => $artists[$randomArtistKey[3]]['cover'],
             'yearTotal' => $yearTotal,
-            'coverUrlYear' => $randomCover3,
+            'coverUrlYear' => $artists[$randomArtistKey[2]]['cover'],
             'yearPreviousTotal' => $yearPreviousTotal,
-            'coverUrlYearPrevious' => $randomCover5,
+            'coverUrlYearPrevious' => $artists[$randomArtistKey[4]]['cover'],
             'mostFrequentArtist' => array_key_first($artists),
             'highestCountArtist' => $artists[array_key_first($artists)]['count'],
             'coverUrlArtist' => $artists[array_key_first($artists)]['cover'],
             'mostFrequentFormat' => array_key_first($formats),
             'highestCountFormat' => $formats[array_key_first($formats)]['count'],
-            'coverUrlFormat' => $randomCover1,
+            'coverUrlFormat' => $artists[$randomArtistKey[0]]['cover'],
             'mostFrequentGenre' => array_key_first($genres),
             'highestCountGenre' => $genres[array_key_first($genres)]['count'],
-            'coverUrlGenre' => $randomCover2,
+            'coverUrlGenre' => $artists[$randomArtistKey[1]]['cover'],
         ];
 
         $_SESSION['results'] = $results;
@@ -182,7 +175,15 @@
     }
     if ($next == 0){
         $img = "nocoverart.jpeg";
-        $title = "Your Discogs Stats";
+        $title = 'Year: <select name="years" id="years" onchange="updateYear()">';
+        for ($i = $year-10; $i <= date("Y"); $i++){
+            if ($i == $year){
+                $title .= '<option value="'.$i.'" selected>'.$i.'</option>';
+            }else{
+                $title .= '<option value="'.$i.'">'.$i.'</option>';
+            }
+        }
+        $title .= '</select>';
         $content = 'Click Next to get started';
         $num = 0;
         $next++;
@@ -247,12 +248,12 @@
 
     <!-- Favicon -->
 	<link rel="shortcut icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" sizes="57x57" href="/favicon-57x57.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="/favicon-72x72.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="/favicon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="/favicon-120x120.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/favicon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180x180.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="favicon-57x57.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="favicon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="favicon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="favicon-120x120.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="favicon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon-180x180.png">
 
     <title>Discogs Wrapped</title>
     <style>
@@ -358,7 +359,7 @@
     </div>
     <div class="below-text">
         <?php if ($next != 7){ ?>
-            <p><a class="refresh" href="wrapped.php?next=<?php echo $next ?>" id="reloadLink" aria-haspopup="true" aria-expanded="false">Next</a></p>
+            <p><a class="refresh" href="wrapped.php?next=<?php echo $next ?>&year=<?php echo $year ?>" id="reloadLink" aria-haspopup="true" aria-expanded="false">Next</a></p>
         <?php }else{ ?>
             <p><a class="refresh" href="wrapped.php" id="reloadLink" aria-haspopup="true" aria-expanded="false">Done</a></p>
         <?php } ?>
@@ -366,18 +367,20 @@
 
         <script>
         function countToX(target, duration) {
-            const counterElement = document.getElementById('counter');
-            const stepTime = Math.abs(Math.floor(duration / target));
-            let current = 0;
+            if (document.getElementById('counter')) {
+                const counterElement = document.getElementById('counter');
+                const stepTime = Math.abs(Math.floor(duration / target));
+                let current = 0;
 
-            const timer = setInterval(() => {
-                current += 1;
-                counterElement.textContent = current;
+                const timer = setInterval(() => {
+                    current += 1;
+                    counterElement.textContent = current;
 
-                if (current >= target) {
-                    clearInterval(timer);
-                }
-            }, stepTime);
+                    if (current >= target) {
+                        clearInterval(timer);
+                    }
+                }, stepTime);
+            }
         }
 
         // Start counting to 100 over 2 seconds
@@ -397,6 +400,19 @@
             if (spinner) {
                 spinner.style.visibility = 'hidden';
             }
+        }
+
+        function updateYear() {
+            // Get the selected year from the dropdown
+            const selectedYear = document.getElementById('years').value;
+
+            // Get the anchor link element
+            const reloadLink = document.getElementById('reloadLink');
+
+            // Update the href attribute with the selected year
+            const url = new URL(reloadLink.href); // Parse the current href
+            url.searchParams.set('year', selectedYear); // Update the 'year' parameter
+            reloadLink.href = url.toString(); // Set the updated URL back to the href
         }
 
         // Open in a new tab
