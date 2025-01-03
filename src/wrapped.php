@@ -5,6 +5,8 @@
     // set error handling
     error_reporting(E_NOTICE);
     ini_set('display_errors', 0);
+    error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
     // have we got a config file?
     try {
@@ -77,11 +79,13 @@
             // get the response and convert it to an array
             $dets = json_decode($response);
 
-            // Cycle through the seasons and check if they are in the database already
+            // Cycle through the releases
             foreach ($dets->releases as $release) {
 
                 // check if the release is in the year we are interested in
                 if (substr($release->date_added,0,4) == $year){
+
+                    // increment the total for the year
                     $yearTotal++;
 
                     // update the artist counts
@@ -139,27 +143,65 @@
             return $b['count'] <=> $a['count'];
         });
 
+
         // Select a random artist
-        $randomArtistKey = array_rand($artists,5);
+        if (empty($artists)){
+            $coverUrlTotal = 'nocoverart.jpeg';
+            $coverUrlYear = 'nocoverart.jpeg';
+            $coverUrlYearPrevious = 'nocoverart.jpeg';
+            $highestCountArtist = 0;
+            $coverUrlArtist = 'nocoverart.jpeg';
+            $mostFrequentArtist = 'No Artists';
+            $coverUrlGenre = 'nocoverart.jpeg';
+            $coverUrlFormat = 'nocoverart.jpeg';
+        }else{
+            $randomArtistKey = array_rand($artists,5);
+            $coverUrlTotal = $artists[$randomArtistKey[3]]['cover'];
+            $coverUrlYear = $artists[$randomArtistKey[2]]['cover'];
+            $coverUrlYearPrevious = $artists[$randomArtistKey[4]]['cover'];
+            $highestCountArtist = $artists[array_key_first($artists)]['count'];
+            $coverUrlArtist = $artists[array_key_first($artists)]['cover'];
+            $mostFrequentArtist = array_key_first($artists);
+            $coverUrlGenre = $artists[$randomArtistKey[1]]['cover'];
+            $coverUrlFormat = $artists[$randomArtistKey[0]]['cover'];
+        }
+
+        // Select a random format
+        if (empty($formats)){
+            $mostFrequentFormat = 'No Format';
+            $highestCountFormat = 0;
+        }else{
+            $mostFrequentFormat = array_key_first($formats);
+            $highestCountFormat = $formats[array_key_first($formats)]['count'];
+        }
+
+        // Select a random genre
+        if (empty($genres)){
+            $mostFrequentGenre = 'No Genre';
+            $highestCountGenre = 0;
+        }else{      
+            $mostFrequentGenre = array_key_first($genres);
+            $highestCountGenre = $genres[array_key_first($genres)]['count'];
+        }
 
         // prepare the results
         $results = [
             'year' => $year,
             'total' => $total,
-            'coverUrlTotal' => $artists[$randomArtistKey[3]]['cover'],
+            'coverUrlTotal' => $coverUrlTotal,
             'yearTotal' => $yearTotal,
-            'coverUrlYear' => $artists[$randomArtistKey[2]]['cover'],
+            'coverUrlYear' => $coverUrlYear,
             'yearPreviousTotal' => $yearPreviousTotal,
-            'coverUrlYearPrevious' => $artists[$randomArtistKey[4]]['cover'],
-            'mostFrequentArtist' => array_key_first($artists),
-            'highestCountArtist' => $artists[array_key_first($artists)]['count'],
-            'coverUrlArtist' => $artists[array_key_first($artists)]['cover'],
-            'mostFrequentFormat' => array_key_first($formats),
-            'highestCountFormat' => $formats[array_key_first($formats)]['count'],
-            'coverUrlFormat' => $artists[$randomArtistKey[0]]['cover'],
-            'mostFrequentGenre' => array_key_first($genres),
-            'highestCountGenre' => $genres[array_key_first($genres)]['count'],
-            'coverUrlGenre' => $artists[$randomArtistKey[1]]['cover'],
+            'coverUrlYearPrevious' => $coverUrlYearPrevious,
+            'mostFrequentArtist' => $mostFrequentArtist,
+            'highestCountArtist' => $highestCountArtist,
+            'coverUrlArtist' => $coverUrlArtist,
+            'mostFrequentFormat' => $mostFrequentFormat,
+            'highestCountFormat' => $highestCountFormat,
+            'coverUrlFormat' => $coverUrlFormat,
+            'mostFrequentGenre' => $mostFrequentGenre,
+            'highestCountGenre' => $highestCountGenre,
+            'coverUrlGenre' => $coverUrlGenre,
         ];
 
         $_SESSION['results'] = $results;
@@ -373,11 +415,11 @@
                 let current = 0;
 
                 const timer = setInterval(() => {
-                    current += 1;
-                    counterElement.textContent = current;
-
                     if (current >= target) {
                         clearInterval(timer);
+                    }else{
+                        current += 1;
+                        counterElement.textContent = current;
                     }
                 }, stepTime);
             }
