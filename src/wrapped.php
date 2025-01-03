@@ -5,8 +5,6 @@
     // set error handling
     error_reporting(E_NOTICE);
     ini_set('display_errors', 0);
-    error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
     // have we got a config file?
     try {
@@ -50,12 +48,13 @@ ini_set('display_errors', 1);
         $total = $dets->num_collection;
 
         // set variables
-        $page = 0;
+        $page = 1;
         $yearTotal = 0;
         $yearPreviousTotal = 0;
         $artists = [];
         $formats = [];
         $genres = [];
+        $i=0;
 
         // loop through the collection
         while ($page <= ($total / 100)) {
@@ -84,7 +83,6 @@ ini_set('display_errors', 1);
 
                 // check if the release is in the year we are interested in
                 if (substr($release->date_added,0,4) == $year){
-
                     // increment the total for the year
                     $yearTotal++;
 
@@ -118,9 +116,9 @@ ini_set('display_errors', 1);
                 }elseif (substr($release->date_added,0,4) == $year-1){
                     $yearPreviousTotal++;
                 }else{
-                    break;  // we are done
+                    //break;  // we are done
                 }
-            
+            $i++;
             }
 
             // Increment the page number
@@ -152,6 +150,15 @@ ini_set('display_errors', 1);
             $highestCountArtist = 0;
             $coverUrlArtist = 'nocoverart.jpeg';
             $mostFrequentArtist = 'No Artists';
+            $coverUrlGenre = 'nocoverart.jpeg';
+            $coverUrlFormat = 'nocoverart.jpeg';
+        }elseif(count($artists) < 5){
+            $coverUrlTotal = 'nocoverart.jpeg';
+            $coverUrlYear = 'nocoverart.jpeg';
+            $coverUrlYearPrevious = 'nocoverart.jpeg';
+            $highestCountArtist = $artists[array_key_first($artists)]['count'];
+            $coverUrlArtist = $artists[array_key_first($artists)]['cover'];
+            $mostFrequentArtist = array_key_first($artists);
             $coverUrlGenre = 'nocoverart.jpeg';
             $coverUrlFormat = 'nocoverart.jpeg';
         }else{
@@ -277,7 +284,7 @@ ini_set('display_errors', 1);
         $next++;        
         session_destroy();
     }
-
+  
 ?>
 
 <!DOCTYPE html>
